@@ -1,31 +1,51 @@
-use anyhow::{Error, Result};
-use std::collections::HashMap;
+use anyhow::{Result, anyhow};
+use std::cmp::Ordering;
+use std::collections::HashSet;
 
 pub fn solve(lines: &[String]) -> Result<(String, String)> {
     Ok((part1(lines)?.to_string(), part2(lines)?.to_string()))
 }
 
 fn part1(lines: &[String]) -> Result<u64> {
-    let map: HashMap<u64, u64> = lines
-        .into_iter()
-        .filter_map(|n| n.parse::<u64>().ok())
-        .map(|n| (n, n))
-        .collect();
-    // println!("Map: {map:?}");
+    let numbers = lines
+        .iter()
+        .map(|l| l.trim().parse::<u64>())
+        .collect::<Result<Vec<_>, _>>()?;
 
-    for (key, _value) in &map {
-        let remainder = 2020 - key;
-        if let Some(other) = map.get(&remainder) {
-            println!("Found: {key} + {other} = 2020");
-            return Ok(key * other);
+    let mut seen = HashSet::new();
+
+    for n in numbers {
+        let remainder = 2020 - n;
+        if seen.contains(&remainder) {
+            println!("Found: {n} + {remainder} = 2020");
+            return Ok(n * remainder);
+        }
+        seen.insert(n);
+    }
+
+    Err(anyhow::anyhow!("No solution found"))
+}
+
+fn part2(lines: &[String]) -> Result<u64> {
+    let mut numbers = lines
+        .iter()
+        .map(|l| l.trim().parse::<u64>())
+        .collect::<Result<Vec<_>, _>>()?;
+    numbers.sort_unstable();
+
+    for i in 0..numbers.len().saturating_sub(2) {
+        let (mut lo, mut hi) = (i + 1, numbers.len() - 1);
+        while lo < hi {
+            let sum = numbers[i] + numbers[lo] + numbers[hi];
+            match sum.cmp(&2020) {
+                Ordering::Equal => return Ok(numbers[i] * numbers[lo] * numbers[hi]),
+                Ordering::Less => lo += 1,
+                Ordering::Greater => hi -= 1,
+            }
         }
     }
 
-    return Err(Error::msg("No pair found"));
-}
-
-fn part2(_lines: &[String]) -> Result<u64> {
-    Ok(0)
+    Err(anyhow!("no solution found"))
 }
 
 #[cfg(test)]

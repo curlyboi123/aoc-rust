@@ -1,6 +1,7 @@
 use anyhow::{Result, anyhow};
 use clap::Parser;
 use std::path::PathBuf;
+use std::time::Instant;
 
 #[derive(Parser)]
 struct Args {
@@ -24,7 +25,11 @@ fn main() -> Result<()> {
         aoc::days::get(args.day).ok_or_else(|| anyhow!("day {} not implemented", args.day))?;
 
     let lines = aoc::util::read_lines(&path)?;
+
+    let start = Instant::now();
     let (p1, p2) = solver(&lines)?;
-    println!("Part 1: {p1}\nPart 2: {p2}");
+    let elapsed = start.elapsed();
+
+    println!("Part 1: {p1}\nPart 2: {p2}\n({elapsed:?})");
     Ok(())
 }
