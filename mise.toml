@@ -1,0 +1,17 @@
+[tools]
+rust = "stable"
+
+[tasks.day]
+description = "Run a day against the full input: mise run day 1"
+dir = "{{config_root}}"
+usage = 'arg "<day>" help="Day number"'
+run = 'cargo run --release -- ${usage_day}'
+
+[tasks.sample]
+description = "Run a day against the sample input: mise run sample 1"
+dir = "{{config_root}}"
+usage = 'arg "<day>" help="Day number"'
+run = 'cargo run --release -- ${usage_day} --sample'
+
+[tasks.test]
+run = "cargo test"
