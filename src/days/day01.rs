@@ -53,17 +53,18 @@ mod tests {
     use super::*;
     use crate::util::lines_from_str;
 
-    const EXAMPLE: &str = include_str!("../../inputs/day01_full.txt");
+    const EXAMPLE: &str = include_str!("../../inputs/day01_sample.txt");
 
     #[test]
     fn example_part1() {
         let lines = lines_from_str(EXAMPLE);
-        assert_eq!(part1(&lines).unwrap(), 0);
+        println!("{:?}", lines);
+        assert_eq!(part1(&lines).unwrap(), 514579);
     }
 
     #[test]
     fn example_part2() {
         let lines = lines_from_str(EXAMPLE);
-        assert_eq!(part2(&lines).unwrap(), 0);
+        assert_eq!(part2(&lines).unwrap(), 241861950);
     }
 }
