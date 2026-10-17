@@ -1,5 +1,5 @@
 use anyhow::{Context, Result};
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::{self, BufRead};
 use std::path::Path;
 
@@ -10,6 +10,11 @@ pub fn read_lines(path: impl AsRef<Path>) -> Result<Vec<String>> {
         .lines()
         .collect::<io::Result<Vec<_>>>()
         .with_context(|| format!("reading {}", path.display()))
+}
+
+pub fn read_lines_as_string(filename: impl AsRef<Path>) -> Result<Vec<String>> {
+    let message = fs::read_to_string(filename)?;
+    Ok(message.lines().map(String::from).collect())
 }
 
 pub fn lines_from_str(s: &str) -> Vec<String> {
