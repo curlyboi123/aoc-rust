@@ -1,7 +1,10 @@
 use anyhow::Result;
 
-pub fn solve(lines: &[String]) -> Result<(String, String)> {
-    Ok((part1(lines)?.to_string(), part2(lines)?.to_string()))
+pub fn solve(file_string: &str) -> Result<(String, String)> {
+    Ok((
+        part1(file_string)?.to_string(),
+        part2(file_string)?.to_string(),
+    ))
 }
 
 #[derive(Debug)]
@@ -30,9 +33,9 @@ fn split_content(line: &str) -> Result<(PasswordPolicy, &str), anyhow::Error> {
     ))
 }
 
-fn part1(lines: &[String]) -> Result<u64> {
+fn part1(file_string: &str) -> Result<u64> {
     let mut valid_password_count = 0;
-    for line in lines {
+    for line in file_string.lines() {
         let (policy, password) = split_content(line)?;
 
         let mut password_valid = true;
@@ -56,9 +59,9 @@ fn part1(lines: &[String]) -> Result<u64> {
     Ok(valid_password_count)
 }
 
-fn part2(lines: &[String]) -> Result<u64> {
+fn part2(file_string: &str) -> Result<u64> {
     let mut valid_password_count = 0;
-    for line in lines {
+    for line in file_string.lines() {
         let (policy, password) = split_content(line)?;
 
         let is_valid_password = (password.chars().nth(policy.min - 1) == Some(policy.character))
@@ -71,20 +74,16 @@ fn part2(lines: &[String]) -> Result<u64> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::util::lines_from_str;
 
     const EXAMPLE: &str = include_str!("../../inputs/day02_sample.txt");
 
     #[test]
     fn example_part1() {
-        let lines = lines_from_str(EXAMPLE);
-        println!("{:?}", lines);
-        assert_eq!(part1(&lines).unwrap(), 2);
+        assert_eq!(part1(EXAMPLE).unwrap(), 2);
     }
 
     #[test]
     fn example_part2() {
-        let lines = lines_from_str(EXAMPLE);
-        assert_eq!(part2(&lines).unwrap(), 1);
+        assert_eq!(part2(EXAMPLE).unwrap(), 1);
     }
 }

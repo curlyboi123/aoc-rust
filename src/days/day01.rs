@@ -2,13 +2,16 @@ use anyhow::{Result, anyhow};
 use std::cmp::Ordering;
 use std::collections::HashSet;
 
-pub fn solve(lines: &[String]) -> Result<(String, String)> {
-    Ok((part1(lines)?.to_string(), part2(lines)?.to_string()))
+pub fn solve(file_string: &str) -> Result<(String, String)> {
+    Ok((
+        part1(file_string)?.to_string(),
+        part2(file_string)?.to_string(),
+    ))
 }
 
-fn part1(lines: &[String]) -> Result<u64> {
-    let numbers = lines
-        .iter()
+fn part1(file_string: &str) -> Result<u64> {
+    let numbers = file_string
+        .lines()
         .map(|l| l.trim().parse::<u64>())
         .collect::<Result<Vec<_>, _>>()?;
 
@@ -26,9 +29,9 @@ fn part1(lines: &[String]) -> Result<u64> {
     Err(anyhow::anyhow!("No solution found"))
 }
 
-fn part2(lines: &[String]) -> Result<u64> {
-    let mut numbers = lines
-        .iter()
+fn part2(file_string: &str) -> Result<u64> {
+    let mut numbers = file_string
+        .lines()
         .map(|l| l.trim().parse::<u64>())
         .collect::<Result<Vec<_>, _>>()?;
     numbers.sort_unstable();
@@ -51,20 +54,16 @@ fn part2(lines: &[String]) -> Result<u64> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::util::lines_from_str;
 
     const EXAMPLE: &str = include_str!("../../inputs/day01_sample.txt");
 
     #[test]
     fn example_part1() {
-        let lines = lines_from_str(EXAMPLE);
-        println!("{:?}", lines);
-        assert_eq!(part1(&lines).unwrap(), 514579);
+        assert_eq!(part1(EXAMPLE).unwrap(), 514579);
     }
 
     #[test]
     fn example_part2() {
-        let lines = lines_from_str(EXAMPLE);
-        assert_eq!(part2(&lines).unwrap(), 241861950);
+        assert_eq!(part2(EXAMPLE).unwrap(), 241861950);
     }
 }

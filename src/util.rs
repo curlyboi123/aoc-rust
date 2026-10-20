@@ -12,11 +12,12 @@ pub fn read_lines(path: impl AsRef<Path>) -> Result<Vec<String>> {
         .with_context(|| format!("reading {}", path.display()))
 }
 
-pub fn read_lines_as_string(filename: impl AsRef<Path>) -> Result<Vec<String>> {
+pub fn read_lines_as_string_vec(filename: impl AsRef<Path>) -> Result<Vec<String>> {
     let message = fs::read_to_string(filename)?;
     Ok(message.lines().map(String::from).collect())
 }
 
-pub fn lines_from_str(s: &str) -> Vec<String> {
-    s.lines().map(String::from).collect()
+pub fn read_lines_as_string(filename: impl AsRef<Path>) -> Result<String> {
+    let message = fs::read_to_string(filename)?;
+    return Ok(message);
 }

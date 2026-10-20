@@ -1,17 +1,20 @@
 use anyhow::Result;
 use log::{debug, info};
 
-pub fn solve(lines: &[String]) -> Result<(String, String)> {
-    Ok((part1(lines)?.to_string(), part2(lines)?.to_string()))
+pub fn solve(file_string: &str) -> Result<(String, String)> {
+    Ok((
+        part1(file_string)?.to_string(),
+        part2(file_string)?.to_string(),
+    ))
 }
 
-fn simulate_descent(lines: &[String], right: usize, down: usize) -> u32 {
+fn simulate_descent(grid: &[String], right: usize, down: usize) -> u32 {
     let mut position = (0, 0);
-    let row_length = lines[0].len();
+    let row_length = grid[0].len();
     let mut tree_count = 0;
 
-    while position.0 < lines.len() {
-        let value = lines[position.0].chars().nth(position.1).unwrap();
+    while position.0 < grid.len() {
+        let value = grid[position.0].chars().nth(position.1).unwrap();
         debug!("Value: {}", value);
 
         if value == '#' {
@@ -25,15 +28,19 @@ fn simulate_descent(lines: &[String], right: usize, down: usize) -> u32 {
     return tree_count;
 }
 
-fn part1(lines: &[String]) -> Result<u64> {
-    Ok(simulate_descent(lines, 3, 1) as u64)
+fn part1(file_string: &str) -> Result<u64> {
+    let grid: Vec<String> = file_string.lines().map(String::from).collect();
+    Ok(simulate_descent(&grid, 3, 1) as u64)
 }
 
-fn part2(lines: &[String]) -> Result<u64> {
+fn part2(file_string: &str) -> Result<u64> {
+    let grid: Vec<String> = file_string.lines().map(String::from).collect();
+
     let slopes = [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)];
     let mut result = 1;
+
     for (right, down) in slopes {
-        result *= simulate_descent(lines, right, down) as u64;
+        result *= simulate_descent(&grid, right, down) as u64;
     }
     Ok(result)
 }
@@ -41,20 +48,16 @@ fn part2(lines: &[String]) -> Result<u64> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::util::lines_from_str;
 
     const EXAMPLE: &str = include_str!("../../inputs/day03_sample.txt");
 
     #[test]
     fn example_part1() {
-        let lines = lines_from_str(EXAMPLE);
-        println!("{:?}", lines);
-        assert_eq!(part1(&lines).unwrap(), 7);
+        assert_eq!(part1(EXAMPLE).unwrap(), 7);
     }
 
     #[test]
     fn example_part2() {
-        let lines = lines_from_str(EXAMPLE);
-        assert_eq!(part2(&lines).unwrap(), 336);
+        assert_eq!(part2(EXAMPLE).unwrap(), 336);
     }
 }
