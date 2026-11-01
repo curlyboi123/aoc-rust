@@ -8,10 +8,40 @@ pub fn solve(file_string: &str) -> Result<(String, String)> {
 }
 
 fn part1(file_string: &str) -> u64 {
+    let mut highest_seat_id = u64::MIN;
+
     for line in file_string.lines() {
         println!("{line:?}");
+
+        let mut lo: u32= 0;
+        let mut hi: u32 = 127;
+
+        for b in line.bytes().take(7) {
+            match b {
+                b'F' => { hi = lo.midpoint(hi) },
+                b'B' => { lo = (lo + hi).div_ceil(2) },
+                _ => unreachable!(),
+            }
+        }
+        let row = lo; // Make logic better by ensuring lo and hi are equal
+
+        let mut lo_col: u32 = 0;
+        let mut hi_col: u32 = 7;
+
+        for b in line.bytes().rev().take(3).rev() {
+            match b {
+                b'L' => { hi_col = lo_col.midpoint(hi_col) },
+                b'R' => { lo_col = (lo_col + hi_col).div_ceil(2) },
+                _ => unreachable!(),
+            }
+        }
+
+        let col = lo_col;
+
+        highest_seat_id = u64::max(highest_seat_id,u64::from((row * 8) + col));
     }
-    0
+
+    highest_seat_id
 }
 
 fn part2(_file_string: &str) -> u64 {
@@ -34,4 +64,3 @@ mod tests {
         assert_eq!(part2(EXAMPLE), 0);
     }
 }
- 
