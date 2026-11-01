@@ -59,11 +59,11 @@ mod tests {
 
     #[test]
     fn example_part1() {
-        assert_eq!(part1(EXAMPLE).unwrap(), 514579);
+        assert_eq!(part1(EXAMPLE).unwrap(), 51_4579);
     }
 
     #[test]
     fn example_part2() {
-        assert_eq!(part2(EXAMPLE).unwrap(), 241861950);
+        assert_eq!(part2(EXAMPLE).unwrap(), 241_861_950);
     }
 }

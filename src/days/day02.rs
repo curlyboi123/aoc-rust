@@ -17,10 +17,10 @@ struct PasswordPolicy {
 fn split_content(line: &str) -> Result<(PasswordPolicy, &str), anyhow::Error> {
     let (a, password) = line.split_once(": ").unwrap();
     let password = password.trim();
-    let (amounts, character) = a.split_once(" ").unwrap();
+    let (amounts, character) = a.split_once(' ').unwrap();
     let character = character.chars().next().unwrap();
 
-    let (min, max) = amounts.split_once("-").unwrap();
+    let (min, max) = amounts.split_once('-').unwrap();
     let min: usize = min.parse()?;
     let max: usize = max.parse()?;
     Ok((
@@ -33,7 +33,7 @@ fn split_content(line: &str) -> Result<(PasswordPolicy, &str), anyhow::Error> {
     ))
 }
 
-fn part1(file_string: &str) -> Result<u64> {
+fn part1(file_string: &str) -> Result<i32> {
     let mut valid_password_count = 0;
     for line in file_string.lines() {
         let (policy, password) = split_content(line)?;
@@ -53,20 +53,20 @@ fn part1(file_string: &str) -> Result<u64> {
             password_valid = false;
         }
 
-        valid_password_count += if password_valid { 1 } else { 0 };
+        valid_password_count += i32::from(password_valid);
     }
     println!("Valid password count: {valid_password_count}");
     Ok(valid_password_count)
 }
 
-fn part2(file_string: &str) -> Result<u64> {
+fn part2(file_string: &str) -> Result<i32> {
     let mut valid_password_count = 0;
     for line in file_string.lines() {
         let (policy, password) = split_content(line)?;
 
         let is_valid_password = (password.chars().nth(policy.min - 1) == Some(policy.character))
             != (password.chars().nth(policy.max - 1) == Some(policy.character));
-        valid_password_count += if is_valid_password { 1 } else { 0 };
+        valid_password_count += i32::from(is_valid_password);
     }
     Ok(valid_password_count)
 }
