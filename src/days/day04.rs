@@ -4,8 +4,8 @@ use std::collections::HashMap;
 
 pub fn solve(file_string: &str) -> Result<(String, String)> {
     Ok((
-        part1(file_string)?.to_string(),
-        part2(file_string)?.to_string(),
+        part1(file_string).to_string(),
+        part2(file_string).to_string(),
     ))
 }
 
@@ -18,45 +18,64 @@ fn has_required_fields(map: &HashMap<&str, &str>) -> bool {
 fn validate_year(field: &str, expected_length: usize, min_val: i32, max_val: i32) -> bool {
     if field.len() != expected_length {
         return false;
-    };
-    let field = field.parse::<i32>().unwrap();
-    if field <= min_val || field >= max_val {
-        return false;
     }
+    let field = field.parse::<i32>().unwrap();
+    if field < min_val || field > max_val { return false }
     true
 }
 
 fn has_valid_fields(map: &HashMap<&str, &str>) -> Result<bool> {
-    if !has_required_fields(map) {
-        return Ok(false);
-    }
+    if !has_required_fields(map) { return Ok(false) }
 
     // Birth year
-    let birth_year = map.get("byr").unwrap();
-    if !validate_year(*birth_year, 4, 1920, 2002) {
+    let Some(&birth_year) = map.get("byr") else { return Ok(false) };
+    if !validate_year(birth_year, 4, 1920, 2002) {
         return Ok(false);
     }
     // Issue year
-    let issue_year = map.get("iyr").unwrap();
-    if !validate_year(*issue_year, 4, 2010, 2020) {
+    let Some(&issue_year) = map.get("iyr") else { return Ok(false) };
+    if !validate_year(issue_year, 4, 2010, 2020) {
         return Ok(false);
     }
 
     // Expiration year
-    let expiration_year = map.get("eyr").unwrap();
-    if !validate_year(*expiration_year, 4, 2020, 2030) {
+    let Some(&expiration_year) = map.get("eyr") else { return Ok(false) };
+    if !validate_year(expiration_year, 4, 2020, 2030) {
         return Ok(false);
     }
 
     // Height
-    let height = map.get("hgt").unwrap();
-    let re = Regex::new(r"(\d+)(cm|in)").unwrap();
+    let Some(&height) = map.get("hgt") else { return Ok(false) };
+    let re = Regex::new(r"^(\d+)(cm|in)$").unwrap();
     let mut fields: Vec<(i32, &str)> = vec![];
-    for (_, [f1, f2]) in re.captures_iter(height).map(|caps| caps.extract()) {
-        fields.push((f1.parse::<i32>()?, f2))
+    for (_, [val, unit]) in re.captures_iter(height).map(|caps| caps.extract()) {
+        fields.push((val.parse::<i32>()?, unit));
     }
-    println!("Height regex results: {fields:?}");
+    let Some(&(val, unit)) = fields.first() else { return Ok(false) };
+    let valid_height = match unit {
+        "cm" => (150..=193).contains(&val),
+        "in" => (59..=76).contains(&val),
+        _ => false,
+    };
+    if !valid_height { return Ok(false) }
 
+    // Hair color
+    let Some(&hair_color) = map.get("hcl") else { return Ok(false) };
+    let hair_color_re = Regex::new(r"^#(\d|[a-f]){6}$").unwrap();
+    let has_valid_hair_color = hair_color_re.is_match(hair_color);
+    if !has_valid_hair_color { return Ok(false) }
+
+    // Eye color
+    let Some(&eye_color) = map.get("ecl") else { return Ok(false)};
+    let allowed_eye_colors = ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"];
+    if !allowed_eye_colors.contains(&eye_color) { return Ok(false) }
+
+    // Passport ID
+    let Some(&passport_id) = map.get("pid") else { return Ok(false) };
+    let passport_re = Regex::new(r"^\d{9}$").unwrap();
+    let has_valid_passport_id = passport_re.is_match(passport_id);
+    if !has_valid_passport_id { return Ok(false) }
+ 
     Ok(true)
 }
 
@@ -73,38 +92,35 @@ fn construct_passports(file_string: &str) -> Result<Vec<HashMap<&str, &str>>> {
                 .collect::<Result<HashMap<_, _>>>()
         })
         .collect::<Result<_>>()?;
-    return Ok(passports);
+    Ok(passports)
 }
 
-fn part1(file_string: &str) -> Result<u64> {
+fn part1(file_string: &str) -> u64 {
     let mut invalid_passport_count = 0;
 
     let passports = construct_passports(file_string).unwrap();
 
     for p in passports {
-        println!("Passport: {p:?}");
         if has_required_fields(&p) {
-            println!("Passport has required fields");
             invalid_passport_count += 1;
         }
-        println!();
     }
 
-    Ok(invalid_passport_count)
+    invalid_passport_count
 }
 
-fn part2(file_string: &str) -> Result<u64> {
+fn part2(file_string: &str) -> u64 {
     let passports = construct_passports(file_string).unwrap();
 
     let mut valid_passport_count = 0;
 
     for p in passports {
-        if !has_valid_fields(&p).unwrap() {
+        if has_valid_fields(&p).unwrap() {
             valid_passport_count += 1;
         }
     }
 
-    Ok(valid_passport_count)
+    valid_passport_count
 }
 
 #[cfg(test)]
@@ -115,11 +131,11 @@ mod tests {
 
     #[test]
     fn example_part1() {
-        assert_eq!(part1(EXAMPLE).unwrap(), 2);
+        assert_eq!(part1(EXAMPLE), 2);
     }
 
     #[test]
     fn example_part2() {
-        assert_eq!(part2(EXAMPLE).unwrap(), 0);
+        assert_eq!(part2(EXAMPLE), 0);
     }
 }
