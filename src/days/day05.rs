@@ -56,7 +56,6 @@ fn part2(file_string: &str) -> u32 {
     let mut min_seat_id = u32::MAX;
     let mut max_seat_id = u32::MIN;
 
-
     for line in file_string.lines() {
         let seat_id = get_seat_id(line);
         filled_seat_ids.insert(seat_id);
@@ -67,10 +66,12 @@ fn part2(file_string: &str) -> u32 {
     // println!("Fille seats: {filled_seat_ids:?}");
     // println!("Min seat id: {min_seat_id}");
     // println!("Max seat id: {max_seat_id}");
-    
+
     for i in min_seat_id..=max_seat_id {
         // println!("Seat_id: {i}");
-        if !filled_seat_ids.contains(&i) { return i }
+        if !filled_seat_ids.contains(&i) {
+            return i;
+        }
     }
     0 // TODO: Do proper result here
 }
