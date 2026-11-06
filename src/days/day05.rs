@@ -9,9 +9,7 @@ pub fn solve(file_string: &str) -> Result<(String, String)> {
     ))
 }
 
-fn get_seat_id(line: &str) -> u32 {
-    // println!("{line:?}");
-
+fn _get_seat_id(line: &str) -> u32 {
     let mut lo: u32 = 0;
     let mut hi: u32 = 127;
 
@@ -40,11 +38,22 @@ fn get_seat_id(line: &str) -> u32 {
     (row * 8) + col
 }
 
+fn get_seat_id_bin(line: &str) -> u32 {
+    let row_bin = &line[..7].replace('B', "1").replace('F', "0"); 
+    let row = u32::from_str_radix(row_bin, 2).unwrap();
+    
+    let col_bin = &line[7..].replace('R', "1").replace('L', "0");
+    let col = u32::from_str_radix(col_bin, 2).unwrap();
+
+    (row * 8) + col
+}
+
 fn part1(file_string: &str) -> u32 {
     let mut highest_seat_id = u32::MIN;
 
     for line in file_string.lines() {
-        let seat_id = get_seat_id(line);
+        let seat_id = get_seat_id_bin(line);
+
         highest_seat_id = u32::max(highest_seat_id, seat_id);
     }
 
@@ -57,18 +66,14 @@ fn part2(file_string: &str) -> u32 {
     let mut max_seat_id = u32::MIN;
 
     for line in file_string.lines() {
-        let seat_id = get_seat_id(line);
+        let seat_id = get_seat_id_bin(line);
         filled_seat_ids.insert(seat_id);
+
         min_seat_id = u32::min(min_seat_id, seat_id);
         max_seat_id = u32::max(max_seat_id, seat_id);
     }
 
-    // println!("Fille seats: {filled_seat_ids:?}");
-    // println!("Min seat id: {min_seat_id}");
-    // println!("Max seat id: {max_seat_id}");
-
     for i in min_seat_id..=max_seat_id {
-        // println!("Seat_id: {i}");
         if !filled_seat_ids.contains(&i) {
             return i;
         }
