@@ -16,7 +16,7 @@ pub fn get(day: u8) -> Option<Solver> {
         3 => Some(day03::solve),
         4 => Some(day04::solve),
         5 => Some(day05::solve),
-        6 => Some(day06::solve),
+        // 6 => Some(day06::solve),
         _ => None,
     }
 }
