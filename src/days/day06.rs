@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use anyhow::Result;
 
 pub fn solve(file_string: &str) -> Result<(String, String)> {
@@ -15,8 +17,14 @@ fn part1(file_string: &str) -> u64 {
     // println!("Answers: {answers:?}");
     for (group_idx, group) in answers.iter().enumerate() {
         println!("Group {group_idx}");
-        for (person_idx, person_answers) in group.iter().enumerate() {
+        for (person_idx, &person_answers) in group.iter().enumerate() {
             println!("Person {person_idx}: {person_answers}");
+            let mut answer_count: HashMap<char, usize> = HashMap::new();
+            for answer in person_answers.as_bytes() {
+                println!("Answer: {answer}");
+            }
+
+
         }
         println!();
     }
